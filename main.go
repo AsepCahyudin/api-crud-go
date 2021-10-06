@@ -1,33 +1,50 @@
 package main
 
 import (
-	// "log"
-	// "net/http"
-	// "golang/api-crud-go/config"
-
-
 	"fmt"
+	"log"
+	"net/http"
+	// "time"
 )
 
-type Profil struct {
-	ID      int
-	Name    string
-	Age     int
-	Address string
+const port string = "9090"
+
+func welcome(w http.ResponseWriter, r *http.Request) {
+	dataHTML := `<h1>Kumpulan Bahasa Pemrograman Keren</h1>
+		<ul>
+			<li>Golang</li>
+			<li>PHP</li>
+			<li>JavaScript</li>
+			<li>Rust</li>
+			<li>Java</li>
+		</ul>
+		Tutorial by : <a href="https://kodingin.com">Kodingin</a>
+		`
+	if r.Method == "GET" {
+		fmt.Fprintf(w, dataHTML)
+	}
 }
 
 func main() {
-	var profil Profil
+	fmt.Println("Berjalan di Port :", port)
 
-	profil.ID = 1
-	profil.Name = "Didik Prabowo"
-	profil.Age = 20
-	profil.Address = "Wuryantoto, Wonogiri"
+	// http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	// 	fmt.Fprintf(w, "Sedang Akses URL %v dengan method %v", r.URL, r.Method)
+	// })
 
-	fmt.Println(profil)
-	fmt.Println("===========================")
-	fmt.Printf("Nama \t: %v\n", profil.Name)
-	fmt.Printf("Umur \t: %d\n", profil.Age)
-	fmt.Printf("Alamat \t: %v\n", profil.Address)
-	fmt.Println("===========================")
+	// http.Handle("/handle", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	// 	fmt.Fprintf(w, "Sedang Akses URL %v dengan method %v", r.URL, r.Method)
+	// }))
+
+	http.HandleFunc("/welcome", welcome)
+
+	// server := &http.Server{
+	// 	Addr:         ":" + port,
+	// 	ReadTimeout:  30 * time.Second,
+	// 	WriteTimeout: 30 * time.Second,
+	// 	IdleTimeout:  10 * time.Second,
+	// }
+	if err := http.ListenAndServe(":"+port, nil); err != nil {
+		log.Fatal(err)
+	}
 }
