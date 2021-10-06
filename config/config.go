@@ -8,8 +8,8 @@ import (
 
 const (
 	username string = "root"
-	password string = "inipassword"
-	database string = "akademik"
+	password string = ""
+	database string = "go_rest_api_crud"
 )
 
 var (
