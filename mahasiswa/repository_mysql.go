@@ -27,6 +27,8 @@ func GetAll(ctx context.Context) ([]models.Mahasiswa, error) {
 
 	queryText := fmt.Sprintf("SELECT * FROM %v Order By id DESC", table)
 
+	// fmt.Println(queryText)
+
 	rowQuery, err := db.QueryContext(ctx, queryText)
 
 	if err != nil {
