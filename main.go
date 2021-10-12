@@ -6,10 +6,11 @@ import (
 	"net/http"
 	// "api-crud-go/config"
 	"api-crud-go/mahasiswa"
-	// "api-crud-go/models"
+	"api-crud-go/models"
 	"api-crud-go/utils"
 	"fmt"
 	"context"
+	"encoding/json"
 )
 
 
@@ -17,6 +18,8 @@ import (
 func main() {
 
 	http.HandleFunc("/mahasiswa", GetMahasiswa)
+	http.HandleFunc("/mahasiswa/create", PostMahasiswa)
+
 	err := http.ListenAndServe(":7000", nil)
 
 	if err != nil {
@@ -41,7 +44,43 @@ func GetMahasiswa(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Error(w, "Tidak di ijinkan", http.StatusNotFound)
+	http.Error(w, "Tidak di ijinkan", http.StatusMethodNotAllowed)
+	return
+}
+
+// PostMahasiswa
+func PostMahasiswa(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "POST" {
+
+		if r.Header.Get("Content-Type") != "application/json" {
+			http.Error(w, "Gunakan content type application / json", http.StatusBadRequest)
+			return
+		}
+
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+
+		var mhs models.Mahasiswa
+
+		if err := json.NewDecoder(r.Body).Decode(&mhs); err != nil {
+			utils.ResponseJSON(w, err, http.StatusBadRequest)
+			return
+		}
+
+		if err := mahasiswa.Insert(ctx, mhs); err != nil {
+			utils.ResponseJSON(w, err, http.StatusInternalServerError)
+			return
+		}
+
+		res := map[string]string{
+			"status": "Succesfully",
+		}
+
+		utils.ResponseJSON(w, res, http.StatusCreated)
+		return
+	}
+
+	http.Error(w, "Tidak di ijinkan", http.StatusMethodNotAllowed)
 	return
 }
 

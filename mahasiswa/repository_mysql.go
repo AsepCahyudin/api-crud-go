@@ -14,6 +14,8 @@ const (
 	layoutDateTime = "2006-01-02 15:04:05"
 )
 
+
+
 // GetAll
 func GetAll(ctx context.Context) ([]models.Mahasiswa, error) {
 
@@ -26,8 +28,6 @@ func GetAll(ctx context.Context) ([]models.Mahasiswa, error) {
 	}
 
 	queryText := fmt.Sprintf("SELECT * FROM %v Order By id DESC", table)
-
-	// fmt.Println(queryText)
 
 	rowQuery, err := db.QueryContext(ctx, queryText)
 
@@ -63,6 +63,32 @@ func GetAll(ctx context.Context) ([]models.Mahasiswa, error) {
 
 		mahasiswas = append(mahasiswas, mahasiswa)
 	}
-
 	return mahasiswas, nil
+}
+
+// Insert
+func Insert(ctx context.Context, mhs models.Mahasiswa) error {
+
+	db, err := config.MySQL()
+
+	if err != nil {
+		log.Fatal("Can't connect to MySQL", err)
+	}
+
+	fmt.Println("query")
+
+	queryText := fmt.Sprintf("INSERT INTO %v (nim, name, semester, created_at, updated_at) values(%v,'%v',%v,'%v','%v')", table,
+		mhs.NIM,
+		mhs.Name,
+		mhs.Semester,
+		time.Now().Format(layoutDateTime),
+		time.Now().Format(layoutDateTime))
+
+	_, err = db.ExecContext(ctx, queryText)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
